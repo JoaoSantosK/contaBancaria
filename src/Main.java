@@ -1,25 +1,25 @@
-
+import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
-        ContaBancaria conta = new ContaBancaria(100);
+        ContaBancaria conta = new ContaBancaria(new BigDecimal("100.00"));
 
-        conta.depositar(50);
+        conta.depositar(new BigDecimal("50.00"));
 
         try {
-            conta.sacar(30);
+            conta.sacar(new BigDecimal("30.00"));
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
 
         try {
-            conta.sacar(-10);
+            conta.sacar(new BigDecimal("-10.00"));
         } catch (ValorInvalidoException e) {
             System.out.println("Erro: " + e.getMessage());
         }
 
         try {
-            conta.sacar(200);
+            conta.sacar(new BigDecimal("200.00"));
         } catch (SaldoInsuficienteException e) {
             System.out.println("Erro: " + e.getMessage());
         }

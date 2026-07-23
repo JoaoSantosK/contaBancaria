@@ -45,4 +45,10 @@ public class ContaBancaria { //Inicio a classe //correção: class fora do main 
         return Collections.unmodifiableList(historico);
     }
 
+    public List<Transacao> getExtratoDoMes(int mes, int ano) {
+        return historico.stream()
+                .filter(t -> t.dataHora().getMonthValue() == mes && t.dataHora().getYear() == ano)
+                .toList();
+    }
+
 }

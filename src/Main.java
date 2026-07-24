@@ -8,6 +8,7 @@ public class Main {
         ContaBancaria conta = new ContaBancaria(new BigDecimal("100.00"));
 
         conta.depositar(new BigDecimal("50.00"));
+        conta.depositar(new BigDecimal("1250.00"));
 
         try {
             conta.sacar(new BigDecimal("30.00"));
@@ -22,10 +23,11 @@ public class Main {
         }
 
         try {
-            conta.sacar(new BigDecimal("200.00"));
+            conta.sacar(new BigDecimal("2000.00"));
         } catch (SaldoInsuficienteException e) {
             System.out.println("Erro: " + e.getMessage());
         }
+        conta.sacar(new BigDecimal("25.00"));
 
         DateTimeFormatter formatadorBr = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm:ss");
 
@@ -52,6 +54,16 @@ public class Main {
                 System.out.println(transacao.tipoTransacao() + " | R$ " + transacao.valor() + " | Data " + dataFormatada);
             });
         }
+
+        //Extrato ordenado
+        System.out.println("\n--- Extrato ordenado por valor ---");
+
+        List<Transacao> extratoOrdenado = conta.getExtratoDoMesPorValor();
+
+        extratoOrdenado.forEach(transacao -> {
+           String dataFormatada = transacao.dataHora().format(formatadorBr);
+            System.out.println(transacao.tipoTransacao() + " | R$ " + transacao.valor() + " | Data: " + dataFormatada);
+        });
 
     }
 }

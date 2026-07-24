@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Comparator;
 
 public class ContaBancaria { //Inicio a classe //correção: class fora do main (para ser global)
     private BigDecimal saldo;
@@ -48,6 +49,12 @@ public class ContaBancaria { //Inicio a classe //correção: class fora do main 
     public List<Transacao> getExtratoDoMes(int mes, int ano) {
         return historico.stream()
                 .filter(t -> t.dataHora().getMonthValue() == mes && t.dataHora().getYear() == ano)
+                .toList();
+    }
+
+    public List<Transacao> getExtratoDoMesPorValor() {
+        return historico.stream()
+                .sorted(Comparator.comparing(Transacao::valor).reversed())
                 .toList();
     }
 

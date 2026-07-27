@@ -4,11 +4,15 @@ import java.util.List;
 
 public class ContaBancariaService {
     private static final DateTimeFormatter FORMATADOR_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm:ss");
+    private final Notificador notificador;
+    public ContaBancariaService(Notificador notificador) {
+        this.notificador = notificador;
+    }
 
     public void realizarDeposito(ContaBancaria conta, BigDecimal valor) {
         try {
             conta.depositar(valor);
-            System.out.println("Deposito de R$" + valor + " realizado com sucesso.");
+            notificador.enviarNotificacao("Depósito de:R$ " + valor + " realizado com sucesso.");
         } catch (ValorInvalidoException e) {
             System.out.println("Erro no depósito: " + e.getMessage());
         }
@@ -17,7 +21,7 @@ public class ContaBancariaService {
     public void realizarSaque(ContaBancaria conta, BigDecimal valor) {
         try {
             conta.sacar(valor);
-            System.out.println("Saque de R$" + valor + " realizado com sucesso.");
+            notificador.enviarNotificacao("Saque de: R$" + valor + " realizado com sucesso;");
         } catch (SaldoInsuficienteException | ValorInvalidoException e) {
             System.out.println("Erro no saque: " + e.getMessage());
         }

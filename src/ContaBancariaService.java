@@ -50,4 +50,15 @@ public class ContaBancariaService {
             });
         }
     }
+
+    public void processarTaxa(Tributavel contaTributavel) {
+        BigDecimal taxa = contaTributavel.calcularTaxaMensal();
+        notificador.enviarNotificacao("Taxa mensal calculada para desconto: R$ " + taxa);
+    }
+
+    public void processarRendimento(Rentavel contaRentavel) {
+        BigDecimal rendimento = contaRentavel.calcularRendimento();
+        notificador.enviarNotificacao("Rendimento mensal para crédito: R$ " + rendimento);
+    }
+
 }

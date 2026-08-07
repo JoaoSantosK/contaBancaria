@@ -1,6 +1,7 @@
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ContaBancariaService {
     private static final DateTimeFormatter FORMATADOR_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm:ss");
@@ -27,28 +28,40 @@ public class ContaBancariaService {
         }
     }
 
-    public void imprimirExtrato(ContaBancaria conta) {
-        System.out.println("\n--- Extrato Completo da Conta ---");
-        System.out.println("Saldo Atual: R$" + conta.getSaldo());
+    public ExtratoDTO gerarExtrato(ContaBancaria conta) {
+        List<TransacaoDTO> transacoesDTO = conta.getHistorico().stream()
+                .map(transacao -> new TransacaoDTO(
+                        transacao.tipoTransacao().toString(),
+                        "RS " + transacao.valor(),
+                        transacao.dataHora().format(FORMATADOR_BR)
+                ))
+                .toList();
 
-        conta.getHistorico().forEach(transacao -> {
-            String dataFormatada = transacao.dataHora().format(FORMATADOR_BR);
-            System.out.println(transacao.tipoTransacao() + " | R$ " + transacao.valor() + " | Data: " + dataFormatada);
-        });
+        String saldoFormatado = "R$ " + conta.getSaldo();
+        return new ExtratoDTO(saldoFormatado, transacoesDTO);
     }
 
-    public void imprimirExtratoDoMes(ContaBancaria conta, int mes, int ano) {
-        System.out.println("\n--- Extrato do Mês " + mes + "/" + ano + " ---");
-        List<Transacao> extratoMes = conta.getExtratoDoMes(mes, ano);
-
-        if (extratoMes.isEmpty()) {
-            System.out.println("Nenhuma transação encontrada neste período.");
-        } else {
-            extratoMes.forEach(transacao -> {
-                String dataFormatada = transacao.dataHora().format(FORMATADOR_BR);
-                System.out.println(transacao.tipoTransacao() + " | R$ " + transacao.valor() + " | Data: " + dataFormatada);
-            });
+    public ExtratoDTO gerarExtratoDoMes(ContaBancaria conta, int mes, int ano) {
+        if (mes < 1 || mes > 12) {
+            throw new ValorInvalidoException("Mês inválido.");
         }
+
+        List<Transacao> transacoesDoMes = conta.getExtratoDoMes(mes, ano);
+
+        if (transacoesDoMes.isEmpty()) {
+            throw new ExtratoDoMesInvalido("Sem extratos para esse mês!");
+        }
+
+        List<TransacaoDTO> transacoesDTO = transacoesDoMes.stream()
+                .map(transacao -> new TransacaoDTO(
+                   transacao.tipoTransacao().toString(),
+                   "R$ " + transacao.valor(),
+                   transacao.dataHora().format(FORMATADOR_BR)
+                ))
+                .toList();
+
+        String saldoFormatado = "R$ " + conta.getSaldo();
+        return new ExtratoDTO(saldoFormatado, transacoesDTO);
     }
 
     public void processarTaxa(Tributavel contaTributavel) {

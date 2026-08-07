@@ -1,0 +1,1 @@
+public record TransacaoDTO(String tipo, String valorFormatado, String dataFormatada) {}
